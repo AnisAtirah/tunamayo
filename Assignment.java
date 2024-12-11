@@ -3,192 +3,82 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package assignment;
-import java.util.Scanner;
-import java.util.ArrayList;
-public class Assignment {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        
-        //Creating arraylist to store task information
-        ArrayList<String> title = new ArrayList<>();
-        ArrayList<String> describe = new ArrayList<>();
-        ArrayList<String> date = new ArrayList<>();
-        ArrayList<String> category = new ArrayList<>();
-        ArrayList<String> priority = new ArrayList<>();
 
-        //User select which procedure
-        while (true) {
-            System.out.print("What do you want to do today ");
-            System.out.println("\n1) Create a task");
-            System.out.println("2) Manage task");
-            System.out.println("3) Delete task");
-            System.out.println("4) Exit program");
-            System.out.print("Enter number: ");
-            int option = input.nextInt();
-            input.nextLine();
+/**
+ *
+ * @author Allya
+ */
+
+import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+
+public class Assignment {
+    
+  //  public static void main (String[] args) {
         
-            switch (option){
-                case 1:
-                    createTask(title, describe, date, category, priority, input);
-                    break;
-                case 2:
-                    manageTask(title, describe, date, category, priority, input);
-                    break;
-                case 3:
-                    deleteTask(title, describe, date, category, priority, input);
-                    break;
-                case 4:
-                    System.out.println("Bye for Now!");
-                    return;
-                default:
-                    System.out.println("Invalid number please enter again");
-                    System.out.println("");
-                    break;  
-            }
-        }
-    }
+    //task searching - linear search using contains method
+    //Scanner a = new Scanner(System.in);
+    /*
+    System.out.println("Enter your full sentence");
+    String sentence = a.nextLine();
     
-    public static void createTask(ArrayList<String> title, ArrayList<String> describe, ArrayList<String> date, ArrayList<String> category, ArrayList<String> priority, Scanner input){
-        int i = 0;
-        while (true) {
-            System.out.println("");
-            System.out.println("========== Add a New task ==========");
-            System.out.print("Enter task title: ");
-            title.add(input.nextLine());
-            System.out.print("Enter task description: ");
-            describe.add(input.nextLine());
-            System.out.print("Enter due date (YYYY-MM-DD): ");
-            date.add(input.nextLine());
-            System.out.print("Enter task category (Homework / Personal / Work): ");
-            category.add(input.nextLine());
-            System.out.print("Enter priority level (High / Medium / Low): ");
-            priority.add(input.nextLine());   
-            
-            System.out.println("Task \"" + title.get(i) + "\" added succesfully!");
-            i++;
-            System.out.print("Add more task? (Enter Yes / No): ");
-            String choice = input.nextLine();
-            if (!choice.equalsIgnoreCase("yes")) {
-                System.out.println("");
-                return;
-            }
-        }
-    }
+    System.out.print("Enter words you want to find : ");
+    String keyword = a.nextLine();
     
-    public static void manageTask(ArrayList<String> title, ArrayList<String> describe, ArrayList<String> date, ArrayList<String> category, ArrayList<String> priority, Scanner input){
-        while (true){
-            System.out.println("");
-            System.out.println("========== Task Management ==========");
-            System.out.println("1) Mark Task Complete");
-            System.out.println("2) Mark Task Incomplete");
-            //System.out.println("3) Update Task Detail");
-            System.out.print("Enter number: ");
-            int option = input.nextInt();
-            input.nextLine();
-       
-            switch (option) {
-                case 1:
-                    System.out.println("");
-                    System.out.println("========== Mark Task as Complete ==========");
-                    System.out.print("Enter task number: ");
-                    int i = input.nextInt() - 1;
-                    input.nextLine();
-                    if (i <= 0 && i < title.size()) {
-                        System.out.print("Task \"" + title.get(i) + "\" marked as complete");
-                    } else {
-                        System.out.println("Invalid task number");
-                    }
-                    break;
+    if (sentence.toLowerCase().contains(keyword.toLowerCase())) {
+        System.out.println("Match found : \n" +sentence); 
+        } else {
+        System.out.println("No matches found.");}
+        }
+    */
+    
+    
+    //task sorting - switch case,
+    
+// Bubble Sort for due date (ascending or descending)
+    public static void bubbleSortByDueDate(List<Task> tasks, boolean ascending) {
+        int n = tasks.size();
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                boolean condition = ascending
+                        ? tasks.get(j).getDueDate().isAfter(tasks.get(j + 1).getDueDate())
+                        : tasks.get(j).getDueDate().isBefore(tasks.get(j + 1).getDueDate());
                 
-                case 2:
-                    System.out.println("");
-                    System.out.println("========== Mark Task as Incomplete ==========");
-                    System.out.print("Enter task number: ");
-                    int j = input.nextInt() - 1;
-                    input.nextLine();
-                    if (j <= 0 && j < title.size()) {
-                        System.out.print("Task \"" + title.get(j) + "\" marked as incomplete");
-                    } else {
-                        System.out.print("Invalid task number");
-                    }
-                    break;
-                
-                /*case 3:
-                    System.out.println("");
-                    System.out.println("========== Update Task Detail ==========");
-                    System.out.println("1) Update title");
-                    System.out.println("2) Update description");
-                    System.out.println("3) Update due date");
-                    System.out.println("4) Update category");
-                    System.out.println("5) Update priority level");
-                    System.out.print("Enter task number: ");
-                    int taskNum = input.nextInt() - 1;
-                    System.out.println("Update task \"" + title.get(taskNum) + "\"");
-                    System.out.print("Enter the number of details you want to update: ");
-                    int update = input.nextInt();
-                    input.nextLine();
-                
-                    /*switch (update) {
-                        case 1:
-                            System.out.print("New task title: ");
-                            title.set(taskNum, input.nextLine());
-                            System.out.println("Task title updated!");
-                            break;
-                        case 2:
-                            System.out.print("New task description: ");
-                            describe.set(taskNum, input.nextLine());
-                            System.out.println("Task description updated!");
-                            break;
-                        case 3:
-                            System.out.print("New task due date: ");
-                            date.set(taskNum, input.nextLine());
-                            System.out.println("Task due updated!");
-                            break;
-                        case 4:
-                            System.out.print("New task category: ");
-                            category.set(taskNum, input.nextLine());
-                            System.out.println("Task category updated");
-                            break;
-                        case 5:
-                            System.out.print("New task priority level: ");
-                            priority.set(taskNum, input.nextLine());
-                            System.out.println("Task priority updated!");
-                            break;
-                        default:
-                            System.out.println("Invalid number entered");
-                            break;
-                   }*/
+                if (condition) {
+                    // Swap the tasks
+                    Task temp = tasks.get(j);
+                    tasks.set(j, tasks.get(j + 1));
+                    tasks.set(j + 1, temp);
+                }
             }
-            System.out.print("Update more task? (Enter Yes / No): ");
-            String choice = input.nextLine();
-            if (!choice.equalsIgnoreCase("yes")) {
-                System.out.println("");
-                return;
-            }         
         }
     }
-    public static void deleteTask(ArrayList<String> title, ArrayList<String> describe, ArrayList<String> date, ArrayList<String> category, ArrayList<String> priority, Scanner input){
-        while (true){
-            System.out.println("");
-            System.out.println("========== Delete Task =========="); 
-            System.out.print("Enter task number: ");
-            int taskNum = input.nextInt()- 1;
-            input.nextLine();
-            
-            //remove every info berkaitan dengan task
-            title.remove(taskNum);
-            describe.remove(taskNum);
-            date.remove(taskNum);
-            category.remove(taskNum);
-            priority.remove(taskNum);
-            
-            System.out.println("Task removed");
-            System.out.print("Delete more task? (Enter Yes / No): ");
-            String choice = input.nextLine();
-            if (!choice.equalsIgnoreCase("yes")) {
-                System.out.println("");
-                return;
-            }
-        }
+
+    // Main method
+    public static void main(String[] args) {
+        // Sample tasks
+        List<Task> tasks = new ArrayList<>();
+        tasks.add(new Task("Task 1", LocalDate.of(2024, 12, 5), 3));
+        tasks.add(new Task("Task 2", LocalDate.of(2024, 12, 10), 1));
+        tasks.add(new Task("Task 3", LocalDate.of(2024, 12, 8), 2));
+
+        // Display tasks before sorting
+        System.out.println("Tasks before sorting:");
+        tasks.forEach(System.out::println);
+
+        // Sorting example (ascending due date)
+        bubbleSortByDueDate(tasks, true);  // true for ascending
+        System.out.println("\nTasks after sorting by due date (ascending):");
+        tasks.forEach(System.out::println);
+
+        // Sorting example (descending due date)
+        bubbleSortByDueDate(tasks, false);  // false for descending
+        System.out.println("\nTasks after sorting by due date (descending):");
+        tasks.forEach(System.out::println);
     }
 }
+    
+    
+    
