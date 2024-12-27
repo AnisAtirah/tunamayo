@@ -532,10 +532,10 @@ public class Partnajah_yana_nurin { //make sure betulkan jugak code dekat line 3
     System.out.println("");
     
     for (int i = 0; i < title.size(); i++) {
-        if (keyword.equalsIgnoreCase("incomplete")) {
+        if (keyword.equalsIgnoreCase("incomplete") || keyword.equalsIgnoreCase("unfinished")) { //so that user can search using status jugak
         status_key = (status.get(i) == 0);
         }
-        if (keyword.equalsIgnoreCase("complete")) {
+        if (keyword.equalsIgnoreCase("complete")  || keyword.equalsIgnoreCase("done") ||  || keyword.equalsIgnoreCase("finish")) {
         status_key = (status.get(i) == 1);
         }
         
