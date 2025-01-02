@@ -392,7 +392,17 @@ public class TunaMayo { //make sure betulkan jugak code dekat line 350 ikut nama
     CatchData(taskNumber, title, describe, date, category, priority, status);
     
     int choice;
+    int [] priority_rank = new int [priority.size()];
     
+    for (int i = 0; i < priority.size(); i++) { //assign value for each priority to make it easier to compare 
+        if (priority.get(i).equalsIgnoreCase("low")) 
+            priority_rank [i] = 1;
+        else if (priority.get(i).equalsIgnoreCase("medium"))
+            priority_rank [i] = 2;
+        else if (priority.get(i).equalsIgnoreCase("high"))
+            priority_rank [i] = 3;
+        }
+      
     do {
     System.out.println("");
     System.out.println("Sort by :");
@@ -453,11 +463,11 @@ public class TunaMayo { //make sure betulkan jugak code dekat line 350 ikut nama
         }
         break;
 
-        case 3 :
+        case 3 : //sort by priority from high to low
         int m = priority.size();
         for (int i = 0; i < m-1; i++) {
             for (int j = 0; j < m-i-1; j++) {
-                    if (priority.get(j).compareToIgnoreCase(priority.get(j+1)) > 0) {
+                    if (priority_rank[j] < priority_rank[j+1]) {
                         swap1(title, j, j + 1);
                         swap1(describe, j, j + 1);
                         swap1(date, j, j + 1);
@@ -469,11 +479,11 @@ public class TunaMayo { //make sure betulkan jugak code dekat line 350 ikut nama
             }
         break;
 
-        case 4 :
+        case 4 :   //sort by priority from low to high
         int h = priority.size();
         for (int i = 0; i < h-1; i++) {
             for (int j = 0; j < h-i-1; j++) {
-                    if (priority.get(j).compareToIgnoreCase(priority.get(j+1)) < 0) {
+                    if (priority_rank[j] > priority_rank[j+1]) {
                         swap1(title, j, j + 1);
                         swap1(describe, j, j + 1);
                         swap1(date, j, j + 1);
@@ -498,7 +508,7 @@ public class TunaMayo { //make sure betulkan jugak code dekat line 350 ikut nama
             String prioritysort = priority.get(i);
             int statussort = status.get(i);
             
-            actionInDB(6, i, titlesort, describesort , datesort, categorysort, prioritysort, 0, 0, null, null, 0, statussort,null);
+            actionInDB(6, i, titlesort, describesort , datesort, categorysort, prioritysort, 0, 0, null, null, 0, statussort);
         }
         
         System.out.println("");
@@ -513,7 +523,7 @@ public class TunaMayo { //make sure betulkan jugak code dekat line 350 ikut nama
                 }
         }
         System.out.println("");
-    }
+    }    
 
     public static void swap1 (ArrayList<String> list, int i, int j){
         String temp1 = list.get(i);
