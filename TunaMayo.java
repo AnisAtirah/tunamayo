@@ -392,17 +392,7 @@ public class TunaMayo { //make sure betulkan jugak code dekat line 350 ikut nama
     CatchData(taskNumber, title, describe, date, category, priority, status);
     
     int choice;
-    int [] priority_rank = new int [priority.size()];
     
-    for (int i = 0; i < priority.size(); i++) { //assign value for each priority to make it easier to compare 
-        if (priority.get(i).equalsIgnoreCase("low")) 
-            priority_rank [i] = 1;
-        else if (priority.get(i).equalsIgnoreCase("medium"))
-            priority_rank [i] = 2;
-        else if (priority.get(i).equalsIgnoreCase("high"))
-            priority_rank [i] = 3;
-        }
-      
     do {
     System.out.println("");
     System.out.println("Sort by :");
@@ -467,7 +457,7 @@ public class TunaMayo { //make sure betulkan jugak code dekat line 350 ikut nama
         int m = priority.size();
         for (int i = 0; i < m-1; i++) {
             for (int j = 0; j < m-i-1; j++) {
-                    if (priority_rank[j] < priority_rank[j+1]) {
+                    if (priorityRank(priority.get(j)) < priorityRank(priority.get(j+1))) {
                         swap1(title, j, j + 1);
                         swap1(describe, j, j + 1);
                         swap1(date, j, j + 1);
@@ -483,7 +473,7 @@ public class TunaMayo { //make sure betulkan jugak code dekat line 350 ikut nama
         int h = priority.size();
         for (int i = 0; i < h-1; i++) {
             for (int j = 0; j < h-i-1; j++) {
-                    if (priority_rank[j] > priority_rank[j+1]) {
+                    if (priorityRank(priority.get(j)) > priorityRank(priority.get(j+1))) {
                         swap1(title, j, j + 1);
                         swap1(describe, j, j + 1);
                         swap1(date, j, j + 1);
@@ -535,6 +525,18 @@ public class TunaMayo { //make sure betulkan jugak code dekat line 350 ikut nama
         int temp2 = status.get(i);
         status.set(i, status.get(j));
         status.set(j, temp2);
+    }
+
+    public static int priorityRank (String priority) {
+        //assign value for each priority to make it easier to compare 
+            if (priority.equalsIgnoreCase("low")) 
+                return 1;
+            else if (priority.equalsIgnoreCase("medium"))
+                return 2;
+            else if (priority.equalsIgnoreCase("high"))
+                return 3;
+            
+            return 0;
     }
 
     public static void searchTask(ArrayList<String> title, ArrayList<String> describe, ArrayList<String> date, ArrayList<String> category, ArrayList<String> priority, ArrayList<Integer> taskNumber, ArrayList<Integer> status, ArrayList<Integer> dependency, Scanner input) {
