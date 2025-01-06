@@ -1,4 +1,4 @@
-package withEmail;
+package recurringtask;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,8 +11,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.InputMismatchException;
-import static withEmail.RecurringTask.actionInDBR;
-import static withEmail.RecurringTask.taskList;
+import static recurringtask.RecurringTask.actionInDBR;
+import static recurringtask.RecurringTask.taskList;
 
 //this class is to used in method to detect cycle of dependencies
 class ListNode {
@@ -194,14 +194,22 @@ public class TunaMayo { //make sure betulkan jugak code dekat line 350 ikut nama
                     sortTask(taskNumber, title, describe, date, category, priority, status,input);
                     break;
                 case 7:
+                    System.out.println("");
+                    System.out.println("========== Search Task =========="); 
+                    System.out.println("Which type of task do you want to search?\n1. Regular Task\n2. Recurring Task");
+                    int type3 = input.nextInt();
+                    if (type3 == 1){
                     searchTask(title, describe, date, category, priority, taskNumber, status, dependency, input);
+                    } else if (type3 == 2) {
+                        RecurringTask.actionInDBR(14, 0, null, null, null, 0);
+                    }
                     break;
                 case 8:
                     System.out.println("\n=== Edit Task ===");
                     System.out.println("Which type of task do you want to delete?\n1. Regular Task\n2. Recurring Task");
-                    int type3 = input.nextInt();
+                    int type4 = input.nextInt();
                     
-                    if (type3 == 1){
+                    if (type4 == 1){
                     System.out.print("Enter the task number you want to edit: ");
                     int taskToEdit = input.nextInt();
                     System.out.print("\nWhat would you like to edit? \n1. Title\n2. Description\n3. Due Date\n4. Category\n5. Priority\n6. Set Task Dependency \n7. Cancel \nEnter no.: ");
@@ -262,7 +270,7 @@ public class TunaMayo { //make sure betulkan jugak code dekat line 350 ikut nama
                     System.out.print("\nWhat would you like to edit? \n1. Title\n2. Description\n3. Due Date\n4. Category\n5. Priority\n6. Set Task Dependency \n7. Cancel \nEnter no.: ");
                     edit = input.nextInt();
                     }
-                } else if (type3 == 2){
+                } else if (type4 == 2){
                        
                         RecurringTask.actionInDBR(3, 0, null, null, null, 0);
                         System.out.println("");
@@ -828,7 +836,7 @@ public class TunaMayo { //make sure betulkan jugak code dekat line 350 ikut nama
     for (int i = 0; i < title.size(); i++) {
         if (keyword.equalsIgnoreCase("incomplete") || keyword.equalsIgnoreCase("unfinished")) { //so that user can search using status jugak
         status_key = (status.get(i) == 0);
-        }
+        }   
         if (keyword.equalsIgnoreCase("complete")  || keyword.equalsIgnoreCase("done") || keyword.equalsIgnoreCase("finish")) {
         status_key = (status.get(i) == 1);
         }
@@ -891,7 +899,7 @@ public class TunaMayo { //make sure betulkan jugak code dekat line 350 ikut nama
             if (due.minusDays(1).compareTo(currentDate)==0){ //check if its already 00:00 of a day before due date.
                 System.out.println("=== Email Notification ===");
                 System.out.println("Sending reminder email for task "+ title.get(i_date) + " due in 24 hours.");
-                tunamayoEmail.sendMailNoti(recepient, title, i_date);
+                TunaMayowithEmail.sendMailNoti(recepient, title, i_date);
                 System.out.println("");
             }
         }
