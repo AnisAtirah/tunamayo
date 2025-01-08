@@ -1,4 +1,4 @@
-package TuDuList;
+package recurringtask;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -8,6 +8,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,6 +34,48 @@ public class RecurringTask extends Task {
     this.complete = complete;
     }
    
+    public static void main(String[] args) {
+        actionInDBR(1, 0, null, null, null, 0);
+        scheduleRecurringTaskCheck();
+        Scanner scanner = new Scanner(System.in);
+        int menu;
+        int numTask;
+        do {
+            System.out.println("1. Add recurring tasks");
+            System.out.println("2. Task completion");
+            System.out.println("3. Display task");
+            System.out.println("4. Exit");
+            System.out.print("Enter number: \n");
+            menu = scanner.nextInt();
+
+            switch(menu) {
+                case 1:
+                    System.out.println("\n=== Add a Recurring Task ===");
+                   //addRecurringTask();
+                   
+                    break;
+                case 2:
+                    //displayTaskTitle();
+                    if (taskList.isEmpty()){
+                        break;
+                    }
+                    System.out.print("Which task do you want to mark as completed? (Insert number): \n");
+                    numTask = scanner.nextInt();
+                    completeTask(numTask-1);
+                    
+                    break;
+                    case 3:
+                    //displayTask();
+                    break;
+                case 4:
+                    break;
+                default:
+                    System.out.println("Incorrent input.");
+
+            }
+    } while (menu != 4);
+    }
+    
     public void updateRecurrenceInterval(String newRecurrenceInterval) {
         this.recurrenceInterval = newRecurrenceInterval;
         this.nextOccurence = LocalDate.now(); // Recalculate next occurrence
@@ -531,6 +575,17 @@ public class RecurringTask extends Task {
             //reindexTasksInDatabase(connection);
             actionInDBR(12, 0, null, null, null, 0);
         }
+      
+        public static boolean isValidDate(String dateStr) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try {
+            LocalDate.parse(dateStr, formatter);// Try parsing the input date string
+            return true;  // If parsing is successful, the date is valid
+        } catch (DateTimeParseException e) {
+            return false;  // If parsing fails, the date is invalid
+        }
+    }
+
     
      public static void actionInDBR(int actforDB, int taskId, String title, String description, String interval, int taskcomplete){
         Connection conn1 = null; 
@@ -685,11 +740,12 @@ public class RecurringTask extends Task {
 
                             LocalDate duedate2 = duedate.toLocalDate();
 
+                            System.out.println("");
                             System.out.print(numTask+1 + ". ");
                             if (isCompleted == 0)
-                                System.out.print("[Incomplete] "+title3+" - Due: "+duedate2 + "\n");
+                                System.out.print("[Incomplete] "+title3+" - Due: "+duedate2);
                             else if (isCompleted == 1)
-                                System.out.print("[Complete] "+title3+" - Due: "+duedate2 + "\n");
+                                System.out.print("[Complete] "+title3+" - Due: "+duedate2);
                         }
                         break;
                     case 6: //select update
@@ -833,6 +889,80 @@ public class RecurringTask extends Task {
                         update1.setInt(4, taskId);
                         update1.executeUpdate();
                         break;
+                    case 14: //search 
+                        Scanner input = new Scanner(System.in);
+                        String keyword;
+                        boolean match = false;
+                        LocalDate inputDate = null;
+                        java.sql.Date sqlInputDate = null;
+                        if (taskList.isEmpty()){
+                            System.out.println("No recurring tasks available.");
+                        return;
+                        }
+                        
+                        searchkey:
+                            while(true) {
+                            System.out.println("");  
+                            System.out.print("Enter your search key (If entering Date, follow the format YYYY-MM-DD): ");
+                            keyword = input.nextLine().toLowerCase();
+                            if (isValidDate(keyword)) {
+                                    inputDate = LocalDate.parse(keyword);
+                                    sqlInputDate = java.sql.Date.valueOf(inputDate);
+                                    break searchkey;
+                                } else if (!isValidDate(keyword)){
+                                    System.out.println("Invalid input format for date. Please follow the format (YYYY-MM-DD).");
+                                    continue searchkey;
+                                }
+                            }
+                        
+                        String sql15 = "SELECT * FROM recurtask"; // Adjust table/column names
+                        PreparedStatement stmt5 = conn1.prepareStatement(sql15);
+                        ResultSet rs5 = stmt5.executeQuery();
+
+                        while (rs5.next()) {
+                            int numTask = rs5.getInt("numTask");
+                            String title3 = rs5.getString("Title");
+                            String desc3 = rs5.getString("Description");
+                            java.sql.Date duedate = rs5.getDate("Due");
+                            int isCompleted = rs5.getInt("Completion");
+                            
+                            if (keyword.equalsIgnoreCase(title3) || keyword.equalsIgnoreCase(desc3) || (sqlInputDate != null && sqlInputDate.equals(duedate))) {
+                                match = true;
+                                LocalDate duedate2 = duedate.toLocalDate();
+
+                                System.out.println("");
+                                System.out.print(numTask+1 + ". " + title3 + " - " + desc3 + " - " + duedate2 + " - ");
+                                if (isCompleted == 0)
+                                    System.out.print("Incomplete\n");
+                                else if (isCompleted == 1)
+                                    System.out.print("Complete\n");
+                            } else if (keyword.equalsIgnoreCase("Incomplete") || keyword.equalsIgnoreCase("Unfinished") || keyword.equalsIgnoreCase("Unfinish")) {
+                                match = true;
+                                int completekeyword = 0;
+                                if (completekeyword == isCompleted){
+                                    LocalDate duedate2 = duedate.toLocalDate();
+                                    System.out.println("");
+                                    System.out.println(numTask+1 + ". " + title3 + " - " + desc3 + " - " + duedate2 + " - " + completekeyword);
+                                    System.out.println("");
+                                } 
+                            }  else if (keyword.equalsIgnoreCase("Complete") || keyword.equalsIgnoreCase("Finished") || keyword.equalsIgnoreCase("Finish")) {
+                                match = true;
+                                int completekeyword = 1;
+                                if (completekeyword == isCompleted){
+                                    LocalDate duedate2 = duedate.toLocalDate();
+                                    System.out.println("");
+                                    System.out.println(numTask+1 + ". " + title3 + " - " + desc3 + " - " + duedate2 + " - " + completekeyword);
+                                    System.out.println("");
+                                } 
+                            } 
+                        }
+                        
+                        if (match == false){
+                            System.out.println("");
+                            System.out.println("Sorry, no match found.");
+                        }  
+                        System.out.println("");
+                        break;
                         
             } 
           }
@@ -851,4 +981,3 @@ public class RecurringTask extends Task {
         } 
     }
 }
-
