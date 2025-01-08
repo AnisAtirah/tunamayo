@@ -194,7 +194,15 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
                     sortTask(taskNumber, title, describe, date, category, priority, status,input);
                     break;
                 case 7:
+                    System.out.println("");
+                    System.out.println("========== Search Task =========="); 
+                    System.out.println("Which type of task do you want to search?\n1. Regular Task\n2. Recurring Task");
+                    int type3 = input.nextInt();
+                    if (type3 == 1){
                     searchTask(title, describe, date, category, priority, taskNumber, status, dependency, input);
+                    } else if (type3 == 2) {
+                        RecurringTask.actionInDBR(14, 0, null, null, null, 0);
+                    }
                     break;
                 case 8:
                     System.out.println("\n=== Edit Task ===");
