@@ -1,4 +1,4 @@
-package recurringtask;
+package TuDuList;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -900,20 +900,32 @@ public class RecurringTask extends Task {
                         return;
                         }
                         
-                        searchkey:
-                            while(true) {
+              
                             System.out.println("");  
-                            System.out.print("Enter your search key (If entering Date, follow the format YYYY-MM-DD): ");
+                            System.out.println("Enter what you want to search for (Title, Description, Next Occurence, Due, Completion)");
                             keyword = input.nextLine().toLowerCase();
-                            if (isValidDate(keyword)) {
+                            switch (keyword){
+                                case "title":
+                                case "description":
+                                case "completion":
+                                    System.out.print("Enter your search key: ");
+                                    keyword = input.nextLine().toLowerCase();
+                                    break;
+                                case "next occurence":
+                                case "due":
+                                    System.out.print("Enter your search key: (Follow the format YYYY-MM-DD): ");
+                                    keyword = input.nextLine().toLowerCase();
+                                    if (isValidDate(keyword)) {
                                     inputDate = LocalDate.parse(keyword);
                                     sqlInputDate = java.sql.Date.valueOf(inputDate);
-                                    break searchkey;
                                 } else if (!isValidDate(keyword)){
-                                    System.out.println("Invalid input format for date. Please follow the format (YYYY-MM-DD).");
-                                    continue searchkey;
-                                }
+                                    System.out.println("Invalid input format for date. Please follow the format (YYYY-MM-DD): ");
+                                }break;
+                                default:
+                                    System.out.println("Invalid.");
                             }
+              
+                 
                         
                         String sql15 = "SELECT * FROM recurtask"; // Adjust table/column names
                         PreparedStatement stmt5 = conn1.prepareStatement(sql15);
@@ -923,15 +935,17 @@ public class RecurringTask extends Task {
                             int numTask = rs5.getInt("numTask");
                             String title3 = rs5.getString("Title");
                             String desc3 = rs5.getString("Description");
+                            java.sql.Date nextocc = rs5.getDate("NextOccurence");
                             java.sql.Date duedate = rs5.getDate("Due");
                             int isCompleted = rs5.getInt("Completion");
                             
-                            if (keyword.equalsIgnoreCase(title3) || keyword.equalsIgnoreCase(desc3) || (sqlInputDate != null && sqlInputDate.equals(duedate))) {
+                            if (keyword.equalsIgnoreCase(title3) || keyword.equalsIgnoreCase(desc3) || (sqlInputDate != null && sqlInputDate.equals(duedate) || (sqlInputDate != null && sqlInputDate.equals(nextocc)))) {
                                 match = true;
+                                LocalDate nextocc2 = nextocc.toLocalDate();
                                 LocalDate duedate2 = duedate.toLocalDate();
 
                                 System.out.println("");
-                                System.out.print(numTask+1 + ". " + title3 + " - " + desc3 + " - " + duedate2 + " - ");
+                                System.out.print(numTask+1 + ". " + title3 + " - " + desc3 + " - " + nextocc2 + " - " + duedate2 + " - ");
                                 if (isCompleted == 0)
                                     System.out.print("Incomplete\n");
                                 else if (isCompleted == 1)
@@ -941,8 +955,9 @@ public class RecurringTask extends Task {
                                 int completekeyword = 0;
                                 if (completekeyword == isCompleted){
                                     LocalDate duedate2 = duedate.toLocalDate();
+                                    LocalDate nextocc2 = nextocc.toLocalDate();
                                     System.out.println("");
-                                    System.out.println(numTask+1 + ". " + title3 + " - " + desc3 + " - " + duedate2 + " - " + completekeyword);
+                                    System.out.print(numTask+1 + ". " + title3 + " - " + desc3 + " - " + nextocc2 + " - " + duedate2 + " - Incomplete");
                                     System.out.println("");
                                 } 
                             }  else if (keyword.equalsIgnoreCase("Complete") || keyword.equalsIgnoreCase("Finished") || keyword.equalsIgnoreCase("Finish")) {
@@ -951,7 +966,7 @@ public class RecurringTask extends Task {
                                 if (completekeyword == isCompleted){
                                     LocalDate duedate2 = duedate.toLocalDate();
                                     System.out.println("");
-                                    System.out.println(numTask+1 + ". " + title3 + " - " + desc3 + " - " + duedate2 + " - " + completekeyword);
+                                    System.out.println(numTask+1 + ". " + title3 + " - " + desc3 + " - " + duedate2 + " - Complete");
                                     System.out.println("");
                                 } 
                             } 
