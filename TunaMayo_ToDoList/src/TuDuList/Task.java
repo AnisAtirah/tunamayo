@@ -4,16 +4,16 @@ public class Task {
 
     public String title;
     public String description;
-    public int k;
+    public int numTask;
     
     public Task(int numTask, String title,String description){
         this.title = title;
         this.description = description;
-        this.k = numTask;
+        this.numTask = numTask;
     }
-    
+   
     public int getNumTask(){
-        return k;
+        return numTask;
     }
     
     public String getTitle(){
@@ -33,6 +33,9 @@ public class Task {
     }
     
     public void updateNumTask(int newNumTask) {
-        this.k = newNumTask;
+        this.numTask = newNumTask;
+    }
+    public static void main(String[] args) {
+        
     }
 }
