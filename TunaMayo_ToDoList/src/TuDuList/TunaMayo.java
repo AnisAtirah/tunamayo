@@ -197,7 +197,7 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
                     System.out.print("[ 1 / 2 ] : ");
                     int type3 = input.nextInt();
                     if (type3 == 1){
-                    sortTask(taskNumber, title, describe, date, category, priority, status,input);
+                        sortTask(taskNumber, title, describe, date, category, priority, status,input);
                     } else if (type3 == 2) {
                         sortTaskR(taskList, input);
                     }
@@ -904,7 +904,6 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
                 RecurringTask rtask2 = (RecurringTask) task2;
                 LocalDate date1 = rtask1.getNextOccurence();
                 LocalDate date2 = rtask2.getNextOccurence();
-                System.out.println(date1 + " _ " + date2);
          
             if (date1.isAfter(date2)) {
                 swap3(taskList, j, j + 1);
@@ -985,12 +984,13 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
             java.sql.Date sqlnextoccsort = java.sql.Date.valueOf(nextoccsort);
             java.sql.Date sqlduedatesort = java.sql.Date.valueOf(duedatesort);
             int completesort = rtask.getCompletion();
-            
-                    
-            System.out.println(titlesort + describesort + recursort + sqlnextoccsort + sqlduedatesort + completesort);
-            RecurringTask.actionInDBR(15, i, titlesort, describesort , recursort, sqlnextoccsort, sqlduedatesort, completesort);
+            if (i == 0)
+            RecurringTask.actionInDBR(15, 0, titlesort, describesort, recursort, sqlnextoccsort, sqlduedatesort, completesort);
+            else
+               RecurringTask.actionInDBR(15, i, titlesort, describesort, recursort, sqlnextoccsort, sqlduedatesort, completesort);
+
         }
-        
+   
         System.out.println("");
         System.out.println("========Recurring Task sorted!========");
         System.out.println("");
@@ -999,13 +999,13 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
             Task task = taskList.get(i);
             RecurringTask rtask = (RecurringTask) task;
                 System.out.print((i+1) + ". " + rtask.getTitle() + " - " + rtask.getDescription() + " - " + rtask.getRecurrenceInterval() + " - " + rtask.getNextOccurence() + " - " + rtask.getDueDate());
-                if (rtask.getCompletion() ==0) {
+                if (rtask.getCompletion()==0) {
                     System.out.println(" - incomplete");
                 } else {
                     System.out.println(" - completed");
                 }
         }
-        System.out.println("");
+        System.out.println("\n");
     } 
     
     public static void swap3 (ArrayList<Task> taskList, int i, int j){
