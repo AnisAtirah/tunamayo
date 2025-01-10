@@ -15,9 +15,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class RecurringTask extends Task {
-    public static String recurrenceInterval; //"weekly", "daily", "monthly"
-    public static LocalDate nextOccurence;
-    public static LocalDate due;
+    public String recurrenceInterval; //"weekly", "daily", "monthly"
+    public LocalDate nextOccurence;
+    public LocalDate due;
     public static java.sql.Date sqlDue;
     public static java.sql.Date sqlnextOcc;
     public static ArrayList<Task> taskList = new ArrayList<>();
@@ -29,75 +29,11 @@ public class RecurringTask extends Task {
     super(numTask, title, description);
     this.i = numTask;
     this.recurrenceInterval = recurrenceInterval;
-    this.nextOccurence = LocalDate.now();
-    this.due = calculateDueDate(nextOccurence, recurrenceInterval);
+    this.nextOccurence = nextOccurence;
+    this.due = due;
     this.complete = complete;
     }
-   
-    public static void main(String[] args) {
-        actionInDBR(1, 0, null, null, null, 0);
-        scheduleRecurringTaskCheck();
-        Scanner scanner = new Scanner(System.in);
-        int menu;
-        int numTask;
-        do {
-            System.out.println("1. Add recurring tasks");
-            System.out.println("2. Task completion");
-            System.out.println("3. Display task");
-            System.out.println("4. Exit");
-            System.out.print("Enter number: \n");
-            menu = scanner.nextInt();
-
-            switch(menu) {
-                case 1:
-                    System.out.println("\n=== Add a Recurring Task ===");
-                   //addRecurringTask();
-                   
-                    break;
-                case 2:
-                    //displayTaskTitle();
-                    if (taskList.isEmpty()){
-                        break;
-                    }
-                    System.out.print("Which task do you want to mark as completed? (Insert number): \n");
-                    numTask = scanner.nextInt();
-                    completeTask(numTask-1);
-                    
-                    break;
-                    case 3:
-                    //displayTask();
-                    break;
-                case 4:
-                    break;
-                default:
-                    System.out.println("Incorrent input.");
-
-            }
-    } while (menu != 4);
-    }
     
-    public void updateRecurrenceInterval(String newRecurrenceInterval) {
-        this.recurrenceInterval = newRecurrenceInterval;
-        this.nextOccurence = LocalDate.now(); // Recalculate next occurrence
-        switch (newRecurrenceInterval.toLowerCase()) {
-            case "daily":
-                this.due = nextOccurence.plusDays(1);
-                break;
-            case "weekly":
-                this.due = nextOccurence.plusWeeks(1);
-                break;
-            case "monthly":
-                this.due = nextOccurence.plusMonths(1);
-                break;
-    }
-        this.sqlnextOcc = java.sql.Date.valueOf(nextOccurence);
-        this.sqlDue = java.sql.Date.valueOf(due);
-    }
-    
-       public void updateCompletion(int newCompletion) {
-        this.complete = newCompletion;
-    }
-   
     public static void scheduleRecurringTaskCheck() {
         // Create a ScheduledExecutorService that runs the update task periodically
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -105,25 +41,28 @@ public class RecurringTask extends Task {
         // Schedule the update task every 1 minute (you can change this to any interval)
         scheduler.scheduleAtFixedRate(() -> {
             // Call the method that checks and updates task completion
-            actionInDBR(6, 0, null, null, null, 1);
+            actionInDBR(6, 0, null, null, null,null,null, 1);
         }, 0, 1, TimeUnit.MINUTES);  // Initial delay of 0, repeat every 1 minute
         
     }
         
     public LocalDate calculateDueDate(LocalDate nextOccurence, String recurrenceInterval) {
-    switch (recurrenceInterval.toLowerCase()) {
-        case "daily":
-            return nextOccurence.plusDays(1);
-        case "weekly":
-            return nextOccurence.plusWeeks(1);
-        case "monthly":
-            return nextOccurence.plusMonths(1);
-        default:
-            throw new IllegalArgumentException("Invalid recurrence interval: " + recurrenceInterval);
+        switch (recurrenceInterval.toLowerCase()) {
+            case "daily":
+                return nextOccurence.plusDays(1);
+            case "weekly":
+                return nextOccurence.plusWeeks(1);
+            case "monthly":
+                return nextOccurence.plusMonths(1);
+            default:
+                throw new IllegalArgumentException("Invalid recurrence interval: " + recurrenceInterval);
     }
 }
-
-    public static String getRecurrenceInterval(int taskId){ //REMAIN KAT LUAR
+    public String getRecurrenceInterval(){
+          return recurrenceInterval;
+      }
+    
+      public static String getRecurrenceInterval(int taskId){ //REMAIN KAT LUAR
         Connection conn = null; 
         try {
             String url1 = "jdbc:mysql://localhost:3306/tunamayo_db"; //insert your database name
@@ -156,26 +95,29 @@ public class RecurringTask extends Task {
         }
         return null;
     }  
-    
+      
+      public LocalDate getNextOccurence(){
+          return nextOccurence;
+      }
         public static java.sql.Date getNextOccurence(int taskId){ //REMAIN KAT LUAR
-        Connection conn = null; 
-        try {
-            String url1 = "jdbc:mysql://localhost:3306/tunamayo_db"; //insert your database name
-            String user = "root";
-            String password = "";
-            
-            //connect with your database
-            conn = DriverManager.getConnection(url1, user, password);
-            if (conn != null) {
-                String sql = "SELECT NextOccurence FROM recurtask WHERE numTask = ? ";
-                var myStat = conn.prepareStatement(sql);
-                myStat.setInt(1, taskId);
-                ResultSet rs = myStat.executeQuery();
-                if(rs.next()){
-                java.sql.Date sqlDate = rs.getDate("NextOccurence");
-                
-                return sqlDate;
-                }
+            Connection conn = null; 
+            try {
+                String url1 = "jdbc:mysql://localhost:3306/tunamayo_db"; //insert your database name
+                String user = "root";
+                String password = "";
+
+                //connect with your database
+                conn = DriverManager.getConnection(url1, user, password);
+                if (conn != null) {
+                    String sql = "SELECT NextOccurence FROM recurtask WHERE numTask = ? ";
+                    var myStat = conn.prepareStatement(sql);
+                    myStat.setInt(1, taskId);
+                    ResultSet rs = myStat.executeQuery();
+                    if(rs.next()){
+                    java.sql.Date sqlDate = rs.getDate("NextOccurence");
+
+                    return sqlDate;
+                    }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -192,6 +134,9 @@ public class RecurringTask extends Task {
         return null;
     }  
         
+    public LocalDate getDueDate(){
+          return due;
+      }
         public static java.sql.Date getDueDate(int taskId){ //REMAIN KAT LUAR
         Connection conn = null; 
         try {
@@ -226,49 +171,12 @@ public class RecurringTask extends Task {
         }
         return null;
     }  
-       public static int getTotalComplete(){ //this is total
-        Connection conn = null; 
-        try {
-            String url1 = "jdbc:mysql://localhost:3306/tunamayo_db"; //insert your database name
-            String user = "root";
-            String password = "";
-            int numTask = 0;
-            int total = -1;
-            //connect with your database
-            conn = DriverManager.getConnection(url1, user, password);
-            if (conn != null) {
-                String sql = "SELECT Completion FROM recurtask WHERE ? ";
-                var myStat = conn.prepareStatement(sql);
-                myStat.setInt(1, 1);
-                ResultSet rs2 = myStat.executeQuery();
-                while (rs2.next()) {
-                    numTask = rs2.getInt("Completion");
-                    if (numTask == 1)
-                        total++;
-}
-                if (total == -1)
-                    return 0;
-                else
-                    return total+1;
-                
-            
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            // Close resources
-            try {
-                if (conn != null) 
-                    conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            
-            }
-        }
-        return 0;
-    }  
-
-        public static int getCompletion(int taskId){ //for one task
+        
+    public int getCompletion(){
+          return complete;
+      }
+        
+    public static int getCompletion(int taskId){ //for one task
         Connection conn = null; 
         try {
             String url1 = "jdbc:mysql://localhost:3306/tunamayo_db"; //insert your database name
@@ -301,7 +209,7 @@ public class RecurringTask extends Task {
         }
         return 0;
     }  
-        
+    
     public static String getTitleDB(int taskId){ //REMAIN KAT LUAR
         Connection conn = null; 
         try {
@@ -444,7 +352,140 @@ public class RecurringTask extends Task {
             }
         }
         return 0;
-    }  
+    }
+    
+        public static int getTotalComplete(){ //this is total
+            Connection conn = null; 
+            try {
+                String url1 = "jdbc:mysql://localhost:3306/tunamayo_db"; //insert your database name
+                String user = "root";
+                String password = "";
+                int numTask = 0;
+                int total = -1;
+                //connect with your database
+                conn = DriverManager.getConnection(url1, user, password);
+                if (conn != null) {
+                    String sql = "SELECT Completion FROM recurtask WHERE ? ";
+                    var myStat = conn.prepareStatement(sql);
+                    myStat.setInt(1, 1);
+                    ResultSet rs2 = myStat.executeQuery();
+                    while (rs2.next()) {
+                        numTask = rs2.getInt("Completion");
+                        if (numTask == 1)
+                            total++;
+    }
+                    if (total == -1)
+                        return 0;
+                    else
+                        return total+1;      
+         }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources
+            try {
+                if (conn != null) 
+                    conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            
+            }
+        }
+        return 0;
+    } 
+        
+        public static void addRecurringTask(int numTask){
+            Scanner scanner = new Scanner(System.in);
+            String interval;
+            int taskcomplete = 0;
+
+            System.out.println("Enter task title: ");
+            String title = scanner.nextLine();
+
+            System.out.println("Enter task description: ");
+            String description = scanner.nextLine();
+
+            inputInterval: 
+                while (true){
+                System.out.println("Enter task recurrence interval (daily, weekly, monthly): ");
+                interval = scanner.next();
+                if (interval.equalsIgnoreCase("daily")||interval.equalsIgnoreCase("weekly")||interval.equalsIgnoreCase("monthly"))
+                    break inputInterval;
+                else {
+                   System.out.println("Invalid interval.");
+                   continue inputInterval;
+                    }
+            }
+
+
+           LocalDate nextOccurence = LocalDate.now();
+           LocalDate due = null;
+
+            switch (interval.toLowerCase()){
+                case "daily":
+                    due = nextOccurence.plusDays(1);
+                    break;
+                case "weekly":
+                    due = nextOccurence.plusWeeks(1);
+                    break;
+                case "monthly":
+                    due = nextOccurence.plusMonths(1);
+                    break;
+                default:
+                    throw new IllegalArgumentException ("Invalid recurrence interval.");
+            }
+
+            sqlnextOcc = java.sql.Date.valueOf(nextOccurence);
+            sqlDue = java.sql.Date.valueOf(due);
+
+            RecurringTask recurringTask = new RecurringTask(numTask, title, description, interval, nextOccurence, due, taskcomplete);
+            taskList.add(recurringTask);
+            actionInDBR(2, numTask, title, description, interval, sqlnextOcc, sqlDue, 0);
+
+            System.out.println("\nRecurring Task '"+ title +"' created successfully!\n");
+    } 
+        
+    public static void completeTask(int taskId){
+        if (taskId < 0 || taskId >= taskList.size()){
+            System.out.println("Invalid task ID.\n");
+            return;
+        }
+        
+        Task task = taskList.get(taskId); //0
+        
+        if (task instanceof RecurringTask) {
+            RecurringTask recurringTask = (RecurringTask) task; 
+            complete = 1;
+            actionInDBR(4, taskId, null, null, null,null,null, complete); //calculate nextocc due and update terus
+            System.out.println("\nRecurring Task '" + getTitleDB(taskId) + "' completed!\n");
+        } else {
+            System.out.println("\nTask '" + task.getTitle() +"' completed!\n");
+            taskList.remove(taskId); //Non-recurring tasks are removed
+        }
+        
+    } 
+    
+    public void updateRecurrenceInterval(String newRecurrenceInterval) {
+        this.recurrenceInterval = newRecurrenceInterval;
+        this.nextOccurence = LocalDate.now(); // Recalculate next occurrence
+        switch (newRecurrenceInterval.toLowerCase()) {
+            case "daily":
+                this.due = nextOccurence.plusDays(1);
+                break;
+            case "weekly":
+                this.due = nextOccurence.plusWeeks(1);
+                break;
+            case "monthly":
+                this.due = nextOccurence.plusMonths(1);
+                break;
+    }
+        this.sqlnextOcc = java.sql.Date.valueOf(nextOccurence);
+        this.sqlDue = java.sql.Date.valueOf(due);
+    }
+    
+       public void updateCompletion(int newCompletion) {
+        this.complete = newCompletion;
+    }
 
     public static boolean taskAlreadyComplete(int numTask){
          Connection conn = null; 
@@ -487,81 +528,11 @@ public class RecurringTask extends Task {
         return false;
     }  
     
-    public static void addRecurringTask(int numTask){
-        Scanner scanner = new Scanner(System.in);
-        String interval;
-        int taskcomplete = 0;
-        
-        System.out.println("Enter task title: ");
-        String title = scanner.nextLine();
-        
-        System.out.println("Enter task description: ");
-        String description = scanner.nextLine();
-        
-        inputInterval: 
-            while (true){
-            System.out.println("Enter task recurrence interval (daily, weekly, monthly): ");
-            interval = scanner.next();
-            if (interval.equalsIgnoreCase("daily")||interval.equalsIgnoreCase("weekly")||interval.equalsIgnoreCase("monthly"))
-                break inputInterval;
-            else {
-               System.out.println("Invalid interval.");
-               continue inputInterval;
-                }
-        }
-        
-        
-       nextOccurence = LocalDate.now();
-       
-        switch (interval.toLowerCase()){
-            case "daily":
-                due = nextOccurence.plusDays(1);
-                break;
-            case "weekly":
-                due = nextOccurence.plusWeeks(1);
-                break;
-            case "monthly":
-                due = nextOccurence.plusMonths(1);
-                break;
-            default:
-                throw new IllegalArgumentException ("Invalid recurrence interval.");
-        }
-        
-        sqlnextOcc = java.sql.Date.valueOf(nextOccurence);
-        sqlDue = java.sql.Date.valueOf(due);
-
-        RecurringTask recurringTask = new RecurringTask(numTask, title, description, interval, nextOccurence, due, taskcomplete);
-        taskList.add(recurringTask);
-        actionInDBR(2, numTask, title, description, interval, 0);
- 
-        System.out.println("\nRecurring Task '"+ title +"' created successfully!\n");
-    }
-        
-    public static void completeTask(int taskId){
-        if (taskId < 0 || taskId >= taskList.size()){
-            System.out.println("Invalid task ID.\n");
-            return;
-        }
-        
-        Task task = taskList.get(taskId); //0
-        
-        if (task instanceof RecurringTask) {
-            RecurringTask recurringTask = (RecurringTask) task; 
-            complete = 1;
-            actionInDBR(4, taskId, null, null, null, complete); //calculate nextocc due and update terus
-            System.out.println("\nRecurring Task '" + getTitleDB(taskId) + "' completed!\n");
-        } else {
-            System.out.println("\nTask '" + task.getTitle() +"' completed!\n");
-            taskList.remove(taskId); //Non-recurring tasks are removed
-        }
-        
-    }
-    
       public static void deleteTask(int taskId){
           
             Task task = taskList.get(taskId);
             String title = getTitleDB(taskId);
-            actionInDBR(8,taskId,null,null ,null, 0);
+            actionInDBR(8,taskId,null,null ,null,null,null, 0);
             
             if (task instanceof RecurringTask) {
                 RecurringTask recurringTask = (RecurringTask) task;
@@ -573,7 +544,7 @@ public class RecurringTask extends Task {
             }
         }
             //reindexTasksInDatabase(connection);
-            actionInDBR(12, 0, null, null, null, 0);
+            actionInDBR(12, 0, null, null, null,null,null, 0);
         }
       
         public static boolean isValidDate(String dateStr) {
@@ -585,9 +556,11 @@ public class RecurringTask extends Task {
             return false;  // If parsing fails, the date is invalid
         }
     }
+        
+        
 
     
-     public static void actionInDBR(int actforDB, int taskId, String title, String description, String interval, int taskcomplete){
+     public static void actionInDBR(int actforDB, int taskId, String title, String description, String interval, java.sql.Date sqlnextOcc, java.sql.Date sqldue, int taskcomplete){
         Connection conn1 = null; 
         try {
             String url1 = "jdbc:mysql://localhost:3306/tunamayo_db"; //insert your database name
@@ -626,7 +599,8 @@ public class RecurringTask extends Task {
                         System.out.println("Tasks loaded from database successfully!");
                         break;
                     case 2: //addrecurringtask -> INSERT DATA
-                        nextOccurence = LocalDate.now();
+                        LocalDate nextOccurence = LocalDate.now();
+                        LocalDate due = null;
         
                         switch (interval.toLowerCase()){
                             case "daily":
@@ -763,7 +737,7 @@ public class RecurringTask extends Task {
 
                         if (nextocc2.isEqual(today) && isCompleted == 1){
                             isCompleted = 0;
-                            actionInDBR(7, numTask, null, null, null, isCompleted);
+                            actionInDBR(7, numTask, null, null, null, null,null,isCompleted);
                         }
                     }
                 break;
@@ -978,7 +952,21 @@ public class RecurringTask extends Task {
                         }  
                         System.out.println("");
                         break;
+                    case 15: //sorting
                         
+                        String sql16 = "UPDATE recurtask SET numTask =?, Description = ?, RecurrenceInterval = ?, NextOccurence = ?, Due = ?, Completion = ? WHERE Title = ?";
+                        update = conn1.prepareStatement(sql16);
+                
+                        update.setInt(1, taskId);
+                        update.setString(2, description);
+                        update.setString(3, interval);
+                        update.setDate(4, sqlnextOcc);
+                        update.setDate(5, sqldue);
+                        update.setInt(6, taskcomplete);
+                        update.setString(7, title);
+
+                        update.executeUpdate();
+                        break;
             } 
           }
         }catch(SQLException ex){
