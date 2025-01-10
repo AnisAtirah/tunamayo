@@ -46,18 +46,6 @@ public class RecurringTask extends Task {
         
     }
         
-    public LocalDate calculateDueDate(LocalDate nextOccurence, String recurrenceInterval) {
-        switch (recurrenceInterval.toLowerCase()) {
-            case "daily":
-                return nextOccurence.plusDays(1);
-            case "weekly":
-                return nextOccurence.plusWeeks(1);
-            case "monthly":
-                return nextOccurence.plusMonths(1);
-            default:
-                throw new IllegalArgumentException("Invalid recurrence interval: " + recurrenceInterval);
-    }
-}
     public String getRecurrenceInterval(){
           return recurrenceInterval;
       }
