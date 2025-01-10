@@ -12,8 +12,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.InputMismatchException;
-import static TuDuList.RecurringTask.actionInDBR;
-import static TuDuList.RecurringTask.taskList;
+import static recurringtask.RecurringTask.actionInDBR;
+import static recurringtask.RecurringTask.taskList;
 
 //this class is to used in method to detect cycle of dependencies
 class ListNode {
@@ -126,7 +126,7 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
                     System.out.println("");
                     actionInDB(4,0, null, null, null, null, null,0,0,null,null,0,0,null);
                     System.out.println("=== View All Recurring Tasks ===");
-                    RecurringTask.actionInDBR(5, 0, null, null, null, 0);
+                    RecurringTask.actionInDBR(5, 0, null, null, null, null,null,0);
                     System.out.println("");
                     break;
                 case 4:
@@ -145,7 +145,7 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
                         System.out.println("");
                     } else if (type == 2) {
                         System.out.println("\n=== Mark Task as Complete ===");
-                        RecurringTask.actionInDBR(3, 0, null, null, null, 0);
+                        RecurringTask.actionInDBR(3, 0, null, null, null,null,null, 0);
                         if (taskList.isEmpty()){
                             System.out.println("No tasks available.");
                         break;
@@ -176,7 +176,7 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
                         actionInDB(13,0, null, null, null, null, null,0,0,null,null,0,0,null);
                         i=i-1;
                     } else if (type2 == 2) {
-                        actionInDBR(3, 0, null, null, null, 0);
+                        actionInDBR(3, 0, null, null, null,null,null, 0);
                         System.out.println("");
                         System.out.print("Which task do you want to delete? (Insert number) : ");
                         int taskId = input.nextInt();
@@ -191,24 +191,34 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
                     System.out.println("");
                     break;
                 case 6:
+                    System.out.println("");
+                    System.out.println("========== Sort Task =========="); 
+                    System.out.println("Which type of task do you want to search?\n1. Regular Task\n2. Recurring Task");
+                    System.out.print("[ 1 / 2 ] : ");
+                    int type3 = input.nextInt();
+                    if (type3 == 1){
                     sortTask(taskNumber, title, describe, date, category, priority, status,input);
+                    } else if (type3 == 2) {
+                        sortTaskR(taskList, input);
+                    }
                     break;
                 case 7:
                     System.out.println("");
                     System.out.println("========== Search Task =========="); 
                     System.out.println("Which type of task do you want to search?\n1. Regular Task\n2. Recurring Task");
-                    int type3 = input.nextInt();
+                    System.out.print("[ 1 / 2 ] : ");
+                    type3 = input.nextInt();
                     if (type3 == 1){
                     searchTask(title, describe, date, category, priority, taskNumber, status, dependency, input);
                     } else if (type3 == 2) {
-                        RecurringTask.actionInDBR(14, 0, null, null, null, 0);
+                        RecurringTask.actionInDBR(14, 0, null, null, null,null,null, 0);
                     }
                     break;
                 case 8:
                     System.out.println("\n=== Edit Task ===");
                     System.out.println("Which type of task do you want to edit?\n1. Regular Task\n2. Recurring Task");
                     System.out.print("[ 1 / 2 ] : ");
-                    int type3 = input.nextInt();
+                    type3 = input.nextInt();
                     
                     if (type3 == 1){
                     System.out.print("Enter the task number you want to edit: ");
@@ -277,7 +287,7 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
                             } 
                         }
                     } else if (type3 == 2){
-                        RecurringTask.actionInDBR(3, 0, null, null, null, 0);
+                        RecurringTask.actionInDBR(3, 0, null, null, null,null,null, 0);
                         System.out.println("");
                         System.out.print("Which task do you want to edit? (Insert number): ");
                         int taskToEditR = input.nextInt();
@@ -298,7 +308,7 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
                                         String newTitle = input.nextLine();
                                         task.updateTitle(newTitle);
                                         System.out.println("Task '"+ RecurringTask.getTitleDB(taskToEditR-1) +"' has been updated to '"+newTitle+"'!");
-                                        RecurringTask.actionInDBR(9, taskToEditR-1, newTitle, null, null, 0);
+                                        RecurringTask.actionInDBR(9, taskToEditR-1, newTitle, null, null, null,null,0);
             
                                         break;
                                     case 2:
@@ -307,7 +317,7 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
                                         String newDescription = input.nextLine();
                                         task.updateDescription(newDescription);
                                         System.out.println("Task '"+ RecurringTask.getTitleDB(taskToEditR-1) +"' has been updated to a new description '"+newDescription+"'!");
-                                        RecurringTask.actionInDBR(10, taskToEditR-1, null, newDescription, null, 0);
+                                        RecurringTask.actionInDBR(10, taskToEditR-1, null, newDescription, null, null,null,0);
                                         break;
                                     case 3:
                                         System.out.print("Enter the new recurrence interval (Daily / Weekly / Monthly) : ");
@@ -315,8 +325,8 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
                                         String newRecurrenceInterval = input.nextLine();
                                         recurringTask.updateRecurrenceInterval(newRecurrenceInterval); //update recurrence interval, next occurence, due date
                                         System.out.println("Task '"+ RecurringTask.getTitleDB(taskToEditR-1) +"' has been updated to a new recurrence interval '"+newRecurrenceInterval+"'!");
-                                        RecurringTask.actionInDBR(11, taskToEditR-1, null, null, newRecurrenceInterval, 0);
-                                        RecurringTask.actionInDBR(13, taskToEditR-1, null, null, null, 0);
+                                        RecurringTask.actionInDBR(11, taskToEditR-1, null, null, newRecurrenceInterval,null,null, 0);
+                                        RecurringTask.actionInDBR(13, taskToEditR-1, null, null, null,null,null, 0);
                                         break;
                                     case 4:
                                         System.out.print("This is to mark the task incomplete. Proceed? (Yes / No) : ");
@@ -325,8 +335,8 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
                                         if (ans.equalsIgnoreCase("yes")){
                                             recurringTask.updateCompletion(0);
                                             System.out.println("Task '"+ RecurringTask.getTitleDB(taskToEditR-1) +"' has been updated incomplete!");
-                                            RecurringTask.actionInDBR(7, taskToEditR-1, null, null, null, 0);
-                                            RecurringTask.actionInDBR(13, taskToEditR-1, null, null, null, 0);
+                                            RecurringTask.actionInDBR(7, taskToEditR-1, null, null, null,null,null, 0);
+                                            RecurringTask.actionInDBR(13, taskToEditR-1, null, null, null, null,null,0);
                                         } else {
                                             break;
                                         }
@@ -858,6 +868,152 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
             return 0;
     }
 
+    public static void sortTaskR(ArrayList<Task> taskList, Scanner input) {
+   
+    taskList.clear();
+    loadDBR();
+    
+    int choice;
+    
+    do {
+    System.out.println("");
+    System.out.println("Sort by :");
+    System.out.println("1. Next occurence (ascending)");
+    System.out.println("2. Next occurence (descending)");
+    System.out.println("3. Due date (ascending))");
+    System.out.println("4. Due date (descending)");
+    System.out.print("Enter the number of your choice : ");
+    while (!input.hasNextInt()) { // Handle non-integer inputs
+        System.out.print("Invalid input. Please enter a number between 1 and 4. \nEnter new number : ");
+        input.nextLine(); // Consume the invalid input
+    }
+        choice = input.nextInt();
+        input.nextLine(); // Clear the buffer
+    } while (choice < 1 || choice > 4);
+    
+    switch (choice) {
+    
+        case 1 : 
+        int n = taskList.size();
+
+        for (int i = 0; i < n-1; i++) {
+            for (int j = 0; j < n-i-1; j++) {
+                Task task1 = taskList.get(j);
+                Task task2 = taskList.get(j+1);
+                RecurringTask rtask1 = (RecurringTask) task1;
+                RecurringTask rtask2 = (RecurringTask) task2;
+                LocalDate date1 = rtask1.getNextOccurence();
+                LocalDate date2 = rtask2.getNextOccurence();
+                System.out.println(date1 + " _ " + date2);
+         
+            if (date1.isAfter(date2)) {
+                swap3(taskList, j, j + 1);
+                }
+            }
+        }
+        break;
+
+        case 2 :
+        int k = taskList.size();
+       
+        for (int i = 0; i < k-1; i++) {
+            for (int j = 0; j < k-i-1; j++) {
+                Task task1 = taskList.get(j);
+                Task task2 = taskList.get(j+1);
+                RecurringTask rtask1 = (RecurringTask) task1;
+                RecurringTask rtask2 = (RecurringTask) task2;
+                LocalDate date1 = rtask1.getNextOccurence();
+                LocalDate date2 = rtask2.getNextOccurence();
+
+            if (date1.isBefore(date2)) {
+                swap3(taskList, j, j + 1);
+                }
+            }
+        }
+        break;
+
+        case 3 : //sort by priority from high to low
+            int m = taskList.size();
+            for (int i = 0; i < m-1; i++) {
+                for (int j = 0; j < m-i-1; j++) {
+                    Task task1 = taskList.get(j);
+                    Task task2 = taskList.get(j+1);
+                    RecurringTask rtask1 = (RecurringTask) task1;
+                    RecurringTask rtask2 = (RecurringTask) task2;
+                    LocalDate date1 = rtask1.getDueDate();
+                    LocalDate date2 = rtask2.getDueDate();
+
+            if (date1.isAfter(date2)) {
+                    swap3(taskList, j, j + 1);
+                    }
+                }
+        }
+            
+        break;
+
+        case 4 :   //sort by priority from low to high
+        int h = taskList.size();
+        for (int i = 0; i < h-1; i++) {
+            for (int j = 0; j < h-i-1; j++) {
+                    Task task1 = taskList.get(j);
+                    Task task2 = taskList.get(j+1);
+                    RecurringTask rtask1 = (RecurringTask) task1;
+                    RecurringTask rtask2 = (RecurringTask) task2;
+                    LocalDate date1 = rtask1.getDueDate();
+                    LocalDate date2 = rtask2.getDueDate();
+
+            if (date1.isBefore(date2)) {
+                    swap3(taskList, j, j + 1);
+                    }
+                }
+            }
+        break;
+
+        default :
+            System.out.println("Invalid choice. Please enter 1-4 only.");
+            
+        } 
+    
+        for (int i =0; i < taskList.size(); i++) {
+            Task task = taskList.get(i);
+            RecurringTask rtask = (RecurringTask) task;
+            String titlesort = rtask.getTitle();
+            String describesort = rtask.getDescription();
+            String recursort = rtask.getRecurrenceInterval();
+            LocalDate nextoccsort = rtask.getNextOccurence();
+            LocalDate duedatesort = rtask.getDueDate();
+            java.sql.Date sqlnextoccsort = java.sql.Date.valueOf(nextoccsort);
+            java.sql.Date sqlduedatesort = java.sql.Date.valueOf(duedatesort);
+            int completesort = rtask.getCompletion();
+            
+                    
+            System.out.println(titlesort + describesort + recursort + sqlnextoccsort + sqlduedatesort + completesort);
+            RecurringTask.actionInDBR(15, i, titlesort, describesort , recursort, sqlnextoccsort, sqlduedatesort, completesort);
+        }
+        
+        System.out.println("");
+        System.out.println("========Recurring Task sorted!========");
+        System.out.println("");
+        
+        for (int i = 0; i < taskList.size(); i++) {
+            Task task = taskList.get(i);
+            RecurringTask rtask = (RecurringTask) task;
+                System.out.print((i+1) + ". " + rtask.getTitle() + " - " + rtask.getDescription() + " - " + rtask.getRecurrenceInterval() + " - " + rtask.getNextOccurence() + " - " + rtask.getDueDate());
+                if (rtask.getCompletion() ==0) {
+                    System.out.println(" - incomplete");
+                } else {
+                    System.out.println(" - completed");
+                }
+        }
+        System.out.println("");
+    } 
+    
+    public static void swap3 (ArrayList<Task> taskList, int i, int j){
+        Task temp1 = taskList.get(i);
+        taskList.set(i, taskList.get(j));
+        taskList.set(j, temp1);
+    }
+    
     public static void searchTask(ArrayList<String> title, ArrayList<String> describe, ArrayList<String> date, ArrayList<String> category, ArrayList<String> priority, ArrayList<Integer> taskNumber, ArrayList<Integer> status, ArrayList<Integer> dependency, Scanner input) {
     
     CatchData(taskNumber, title, describe, date, category, priority, status);
@@ -937,7 +1093,7 @@ public class TunaMayo { //make sure to change the object's class at line 650 to 
             if (due.minusDays(1).compareTo(currentDate)==0){ //check if its already 00:00 of a day before due date.
                 System.out.println("=== Email Notification ===");
                 System.out.println("Sending reminder email for task "+ title.get(i_date) + " due in 24 hours.");
-                tunamayoEmail.sendMailNoti(recepient, title, i_date);
+                TunaMayowithEmail.sendMailNoti(recepient, title, i_date);
                 System.out.println("");
             }
         }
